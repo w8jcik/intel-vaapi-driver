@@ -4,8 +4,6 @@
 
 Some Gen-4 intel GPUs (GMA X4500HD, GMA 4500MHD, X4700MHD) support hardware acceleration of h264 video decoding, but the user-space driver from Intel doesn't offer it.
 
-Related issue https://github.com/intel/intel-vaapi-driver/issues/544
-
 ## Upstream
 
 The video acceleration user-space driver was maintained at:
@@ -191,7 +189,10 @@ Patched driver (h264 G45) is available in:
 
 ## External documentation
 
+- https://github.com/intel/intel-vaapi-driver/issues/544
 - https://fedoraproject.org/wiki/Firefox_Hardware_acceleration
+- https://wiki.archlinux.org/title/Hardware_video_acceleration
+- https://wiki.archlinux.org/title/Intel_graphics#Hardware_accelerated_H.264_decoding_on_GMA_4500
 
 ## Development
 
@@ -200,4 +201,3 @@ To avoid unnecessary changes to line endings
 ```sh
 git config core.whitespace cr-at-eol
 ```
-
