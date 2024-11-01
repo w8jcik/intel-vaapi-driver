@@ -352,6 +352,9 @@ g4x_dec_hw_context_init(VADriverContextP ctx, struct object_config *obj_config)
     case VAProfileH264ConstrainedBaseline:
     case VAProfileH264Main:
     case VAProfileH264High:
+        i965_media_h264_dec_context_init(ctx, media_context);
+        break;
+
     case VAProfileVC1Simple:
     case VAProfileVC1Main:
     case VAProfileVC1Advanced:
