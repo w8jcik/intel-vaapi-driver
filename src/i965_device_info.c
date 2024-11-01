@@ -75,7 +75,7 @@ static struct hw_codec_info g4x_hw_codec_info = {
     .min_linear_hpitch = 4,
 
     .has_mpeg2_decoding = 1,
-
+    .has_h264_decoding = 1,
     .num_filters = 0,
 };
 
