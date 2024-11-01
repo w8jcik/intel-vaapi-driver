@@ -10,21 +10,21 @@ Related issue https://github.com/intel/intel-vaapi-driver/issues/544
 
 The video acceleration user-space driver was maintained at:
 - https://cgit.freedesktop.org/vaapi/intel-driver (until 2017.02.18)
-- https://github.com/intel/intel-vaapi-driver previously https://github.com/01org/intel-vaapi-driver (2024.10.29)
+- https://github.com/intel/intel-vaapi-driver (until 2024.10.29)
 
 The driver is no longer maintained by Intel with `intel-vaapi-driver` successor https://github.com/intel/media-driver supporting Gen-8 and up.
 
 ## Patches
 
 Patches that enable h264 in G45 are available at https://bitbucket.org/alium/g45-h264/downloads.  
-I am not aware who is the author of the code, it might be the user called `alium` or someone else.  
-Please open the issue if you know the details where this code came from.
+I am not aware who is the author of the code. It might be the Bitbucket's user called `alium` or someone else.  
+Please open the issue if you know the details where this code comes from.
 
 ## This project
 
 This project is a fork of https://github.com/intel/intel-vaapi-driver `v2.4-branch` and `master` branches with applied patches from https://bitbucket.org/alium/g45-h264/downloads.
 
-I created this repository to preserve the patches in a transparent way. Tar-balls that are available from Bitbucket feel like a black-box without a real option for further contribution.
+I created this repository to preserve the patches in a transparent way. Archives that are available in Bitbucket feel like a black-box without a real option for further contribution.
 
 ## Get
 
@@ -34,11 +34,13 @@ git clone https://github.com/w8jcik/intel-vaapi-driver.git intel-vaapi-driver-sr
 
 You can specify branch `v2.4-branch-g45-h264`, `master-g45-h264`, `master-experimental`.
 
-- `v2.4-branch-g45-h264` is based on https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1.tar.gz
-- `master-g45-h264` is very similar to `v2.4-branch-g45-h264` just rebased onto upstream `master`. So it has few extra fixes.
-- `master-experimental` is based on https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1-experimental.tar.gz. It has entire one line of changed code that blindly enables h264.
+- `v2.4-branch-g45-h264` is based on upstream `v2.4-branch` and [intel-driver-g45-h264-2.4.1.tar.gz](https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1.tar.gz)
+- `master-g45-h264` is `v2.4-branch-g45-h264` rebased onto upstream `master`. It has few extra fixes.
+- `master-experimental` is based on [intel-driver-g45-h264-2.4.1-experimental.tar.gz](https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1-experimental.tar.gz). It has just one line of changed code that blindly enables h264.
 
-You can also download the original code from BitBucket
+Look into draft _pull requests_ in this project to see what are the modifications.
+
+You can also download the original code [from Bitbucket](https://bitbucket.org/alium/g45-h264/downloads)
 
 ```sh
 wget https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1.tar.gz
@@ -46,12 +48,16 @@ tar -xvzf intel-driver-g45-h264-2.4.1.tar.gz
 mv intel-vaapi-driver intel-vaapi-driver-src
 ```
 
-## Build
+## Get dependencies
+
+For example in Ubuntu 24.04 or 22.04
 
 ```sh
 apt install build-essential pkgconf autoconf libtool -y
 apt install libdrm-dev libva-dev libx11-dev -y
 ```
+
+## Build
 
 ```sh
 cd intel-vaapi-driver-src
@@ -60,11 +66,13 @@ cd intel-vaapi-driver-src
 make install -j $(nproc)
 ```
 
-Modified driver can be found at `intel-vaapi-driver/i965_drv_video.so`.
+The outcome can be found at `intel-vaapi-driver/i965_drv_video.so`.
 
 ## Use
 
-For example on Ubuntu, the `i965-va-driver` package installs a single file `/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so`. Replacing the file with a modified version offers h264 acceleration.
+For example on Ubuntu the `i965-va-driver` package installs a single file `/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so`. Replacing the file with a modified version offers h264 acceleration.
+
+Make copies first
 
 ```sh
 sudo cp /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so-ubuntu
@@ -125,15 +133,15 @@ mpv --hwdec=vaapi big_buck_bunny_720p_h264.mov
 ```
 
 Unfortunatelly the modification doesn't work for me.
-- `v2.4-branch-g45-h264` - refuses to use GPU
-- `master-g45-h264` - GPU acts strangly for few seconds then it resets, session crashes back to login screen
-- `master-experimental` - refuses to use GPU
+- `v2.4-branch-g45-h264` - refuses to use GPU in Ubuntu 24.04, most likely due to lack of fix that was added to `master` later.
+- `master-g45-h264` - GPU acts strangely for few seconds, then GPU hangs, session crashes back to login screen.
+- `master-experimental` - refuses to use GPU.
 
 ```sh
 vlc big_buck_bunny_720p_h264.mov
 ```
 
-Tested on
+## Test system
 
 ```sh
 inxi -G
@@ -159,12 +167,19 @@ sudo intel_gpu_top
 Failed to initialize PMU! (No such device)
 ```
 
-Additional hints:
+## Acceleration in browsers
 
-- https://fedoraproject.org/wiki/Firefox_Hardware_acceleration
+Chromium needs `--enable-features=VaapiVideoDecodeLinuxGL` switch, for example
 
+```sh
+flatpak run com.google.Chrome --enable-features=VaapiVideoDecodeLinuxGL
+```
 
-## Packaging
+Firefox might need configuration in `about:config`.
+
+For YouTube both browsers need _h264ify_ or _enhanced h264ify_ extension to prevent use of AV1 or VP9 codecs. Blocking 60fps in favor of 30fps using these extensions might also help.
+
+## Packages
 
 Packages without modification are available in:
 - [Debian](https://packages.debian.org/search?keywords=i965-va-driver) called `i965-va-driver`.
@@ -173,6 +188,10 @@ Packages without modification are available in:
 
 Patched driver (h264 G45) is available in:
 - [Arch Linux AUR](https://aur.archlinux.org/packages/libva-intel-driver-g45-h264) called `libva-intel-driver-g45-h264`.
+
+## External documentation
+
+- https://fedoraproject.org/wiki/Firefox_Hardware_acceleration
 
 ## Development
 
