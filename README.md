@@ -1,38 +1,45 @@
-[![Stories in Ready](https://badge.waffle.io/intel/intel-vaapi-driver.png?label=ready&title=Ready)](http://waffle.io/intel/intel-vaapi-driver)
-[![Build Status](https://travis-ci.org/intel/intel-vaapi-driver.svg?branch=master)](https://travis-ci.org/intel/intel-vaapi-driver)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/11612/badge.svg)](https://scan.coverity.com/projects/intel-intel-vaapi-driver)
+# Fork of `intel-vaapi-driver` with h264 G45 support
 
-# Intel-vaapi-driver Project
+## The issue
 
-VA-API (Video Acceleration API) user mode driver for Intel GEN Graphics family
+Some Gen-4 intel GPUs (GMA X4500HD, GMA 4500MHD, X4700MHD) support hardware acceleration of h264 video decoding, but the user-space driver from Intel doesn't offer it.
 
-VA-API is an open-source library and API specification, which
-provides access to graphics hardware acceleration capabilities
-for video processing. It consists of a main library and
-driver-specific acceleration backends for each supported hardware 
-vendor.
+Related issue https://github.com/intel/intel-vaapi-driver/issues/544
 
-The current video driver backend provides a bridge to the GEN GPUs through the packaging of buffers and
-commands to be sent to the i915 driver for exercising both hardware and shader functionality for video
-decode, encode, and processing.
+## Upstream
 
-If you would like to contribute to intel-vaapi-driver, check our [Contributing
-guide](https://github.com/intel/intel-vaapi-driver/blob/master/CONTRIBUTING.md).
+The video acceleration user-space driver was maintained at:
+- https://cgit.freedesktop.org/vaapi/intel-driver (until 2017.02.18)
+- https://github.com/intel/intel-vaapi-driver previously https://github.com/01org/intel-vaapi-driver (2024.10.29)
 
-We also recommend taking a look at the ['janitorial'
-bugs](https://github.com/intel/intel-vaapi-driver/issues?q=is%3Aopen+is%3Aissue+label%3AJanitorial)
-in our list of open issues as these bugs can be solved without an
-extensive knowledge of intel-vaapi-driver.
+The driver is no longer maintained by Intel with `intel-vaapi-driver` successor https://github.com/intel/media-driver supporting Gen-8 and up.
 
-We would love to help you start contributing!
+## Patches
 
-The intel vaapi media development team can be reached via our [mailing
-list](https://lists.01.org/mailman/listinfo/intel-vaapi-media) and on IRC
-in channel ##intel-media on [Freenode](https://freenode.net/kb/answer/chat).
+Patches that enable h264 in G45 are available at https://bitbucket.org/alium/g45-h264/downloads.  
+I am not aware who is the author of the code, it might be the user called `alium` or someone else.  
+Please open the issue if you know the details where this code came from.
 
-We also use [#Slack](https://slack.com) and host [VAAPI Media Slack
-Team](https://intel-media.slack.com).  You can signup by submitting your email
-address to our [Slack Team invite page](https://slack-join-intel-media.herokuapp.com).
+## This project
 
-Slack complements our other means of communication.  Pick the one that works
-best for you!
+This project is a fork of https://github.com/intel/intel-vaapi-driver `v2.4-branch` and `master` branches with applied patches from https://bitbucket.org/alium/g45-h264/downloads.
+
+I created this repository to preserve the patches in a transparent way. Tar-balls that are available from Bitbucket feel like a black-box without a real option for further contribution.
+
+## Packaging
+
+Packages are available in:
+- [Debian](https://packages.debian.org/search?keywords=i965-va-driver) called `i965-va-driver`.
+- [Ubuntu](https://launchpad.net/ubuntu/+source/intel-vaapi-driver) called `i965-va-driver`.
+- [Arch Linux](https://archlinux.org/packages/extra/x86_64/libva-intel-driver) called `libva-intel-driver`.
+
+Patched driver (h264 G45) is available in:
+- [Arch Linux AUR](https://aur.archlinux.org/packages/libva-intel-driver-g45-h264) called `libva-intel-driver-g45-h264`.
+
+## Development
+
+To avoid unnecessary changes to line endings
+
+```sh
+git config core.whitespace cr-at-eol
+```

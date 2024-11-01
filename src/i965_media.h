@@ -37,7 +37,7 @@
 
 #include "i965_structs.h"
 
-#define MAX_INTERFACE_DESC      16
+#define MAX_INTERFACE_DESC      32
 #define MAX_MEDIA_SURFACES      34
 
 struct decode_state;
