@@ -1,4 +1,4 @@
-# Fork of `intel-vaapi-driver` with h264 G45 support
+# `intel-vaapi-driver` with h264 G45 support
 
 ## The issue
 
@@ -26,9 +26,143 @@ This project is a fork of https://github.com/intel/intel-vaapi-driver `v2.4-bran
 
 I created this repository to preserve the patches in a transparent way. Tar-balls that are available from Bitbucket feel like a black-box without a real option for further contribution.
 
+## Get
+
+```sh
+git clone https://github.com/w8jcik/intel-vaapi-driver.git intel-vaapi-driver-src
+```
+
+You can specify branch `v2.4-branch-g45-h264`, `master-g45-h264`, `master-experimental`.
+
+- `v2.4-branch-g45-h264` is based on https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1.tar.gz
+- `master-g45-h264` is very similar to `v2.4-branch-g45-h264` just rebased onto upstream `master`. So it has few extra fixes.
+- `master-experimental` is based on https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1-experimental.tar.gz. It has entire one line of changed code that blindly enables h264.
+
+You can also download the original code from BitBucket
+
+```sh
+wget https://bitbucket.org/alium/g45-h264/downloads/intel-driver-g45-h264-2.4.1.tar.gz
+tar -xvzf intel-driver-g45-h264-2.4.1.tar.gz
+mv intel-vaapi-driver intel-vaapi-driver-src
+```
+
+## Build
+
+```sh
+apt install build-essential pkgconf autoconf libtool -y
+apt install libdrm-dev libva-dev libx11-dev -y
+```
+
+```sh
+cd intel-vaapi-driver-src
+./autogen.sh
+./configure LIBVA_DRIVERS_PATH="$(pwd)/../intel-vaapi-driver"
+make install -j $(nproc)
+```
+
+Modified driver can be found at `intel-vaapi-driver/i965_drv_video.so`.
+
+## Use
+
+For example on Ubuntu, the `i965-va-driver` package installs a single file `/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so`. Replacing the file with a modified version offers h264 acceleration.
+
+```sh
+sudo cp /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so-ubuntu
+sudo cp intel-vaapi-driver/i965_drv_video.so /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so-g45-h264-alium
+```
+
+You can switch between the upstream and modified driver with
+
+```sh
+sudo cp /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so-ubuntu /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so
+```
+
+and
+
+```sh
+sudo cp /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so-g45-h264-alium /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so
+```
+
+## Check if it works
+
+```sh
+sudo vainfo
+```
+
+Before modification
+
+```
+libva info: VA-API version 1.22.0
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so
+libva info: Found init function __vaDriverInit_1_20
+libva info: va_openDriver() returns 0
+vainfo: VA-API version: 1.22 (libva 2.22.0)
+vainfo: Driver version: Intel i965 driver for Intel(R) GM45 Express Chipset - 2.4.1
+vainfo: Supported profile and entrypoints
+      VAProfileMPEG2Simple            :	VAEntrypointVLD
+      VAProfileMPEG2Main              :	VAEntrypointVLD
+```
+
+After modification
+
+```
+libva info: VA-API version 1.22.0
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so
+libva info: Found init function __vaDriverInit_1_22
+libva info: va_openDriver() returns 0
+vainfo: VA-API version: 1.22 (libva 2.22.0)
+vainfo: Driver version: Intel i965 driver for Intel(R) GM45 Express Chipset - 2.4.1
+vainfo: Supported profile and entrypoints
+      VAProfileMPEG2Simple            :	VAEntrypointVLD
+      VAProfileMPEG2Main              :	VAEntrypointVLD
+      VAProfileH264ConstrainedBaseline:	VAEntrypointVLD
+      VAProfileH264Main               :	VAEntrypointVLD
+      VAProfileH264High               :	VAEntrypointVLD
+```
+
+```sh
+mpv --hwdec=vaapi big_buck_bunny_720p_h264.mov
+```
+
+```sh
+vlc big_buck_bunny_720p_h264.mov
+```
+
+
+Tested on
+
+```sh
+inxi -G
+```
+
+```
+Graphics:
+  Device-1: Intel Mobile 4 Series Integrated Graphics driver: i915 v: kernel
+  Display: wayland server: X.Org v: 24.1.2 with: Xwayland v: 24.1.2
+    compositor: gnome-shell v: 47.0 driver: dri: crocus gpu: i915
+    resolution: 1680x1050~60Hz
+  API: EGL v: 1.5 drivers: crocus,swrast
+    platforms: gbm,wayland,x11,surfaceless,device
+  API: OpenGL v: 4.5 compat-v: 2.1 vendor: intel mesa v: 24.2.3-1ubuntu1
+    renderer: Mesa Mobile Intel GM45 Express (CTG)
+```
+
+```sh
+sudo intel_gpu_top
+```
+
+```
+Failed to initialize PMU! (No such device)
+```
+
+Additional hints:
+
+- https://fedoraproject.org/wiki/Firefox_Hardware_acceleration
+
+
 ## Packaging
 
-Packages are available in:
+Packages without modification are available in:
 - [Debian](https://packages.debian.org/search?keywords=i965-va-driver) called `i965-va-driver`.
 - [Ubuntu](https://launchpad.net/ubuntu/+source/intel-vaapi-driver) called `i965-va-driver`.
 - [Arch Linux](https://archlinux.org/packages/extra/x86_64/libva-intel-driver) called `libva-intel-driver`.
@@ -43,3 +177,4 @@ To avoid unnecessary changes to line endings
 ```sh
 git config core.whitespace cr-at-eol
 ```
+
