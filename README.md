@@ -124,10 +124,14 @@ vainfo: Supported profile and entrypoints
 mpv --hwdec=vaapi big_buck_bunny_720p_h264.mov
 ```
 
+Unfortunatelly the modification doesn't work for me.
+- `v2.4-branch-g45-h264` - refuses to use GPU
+- `master-g45-h264` - GPU acts strangly for few seconds then it resets, session crashes back to login screen
+- `master-experimental` - refuses to use GPU
+
 ```sh
 vlc big_buck_bunny_720p_h264.mov
 ```
-
 
 Tested on
 
