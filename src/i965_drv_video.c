@@ -5883,15 +5883,7 @@ i965_GetSurfaceAttributes(
             attrib_list[i].flags = VA_SURFACE_ATTRIB_GETTABLE | VA_SURFACE_ATTRIB_SETTABLE;
 
             if (attrib_list[i].value.value.i == 0) {
-                if (IS_G4X(i965->intel.device_info)) {
-                    if (obj_config->profile == VAProfileMPEG2Simple ||
-                        obj_config->profile == VAProfileMPEG2Main) {
-                        attrib_list[i].value.value.i = VA_FOURCC_I420;
-                    } else {
-                        assert(0);
-                        attrib_list[i].flags = VA_SURFACE_ATTRIB_NOT_SUPPORTED;
-                    }
-                } else if (IS_IRONLAKE(i965->intel.device_info)) {
+                if (IS_G4X(i965->intel.device_info) || IS_IRONLAKE(i965->intel.device_info)) {
                     if (obj_config->profile == VAProfileMPEG2Simple ||
                         obj_config->profile == VAProfileMPEG2Main) {
                         attrib_list[i].value.value.i = VA_FOURCC_I420;
