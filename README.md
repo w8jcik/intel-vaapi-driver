@@ -1,3 +1,8 @@
+> [!TIP]
+> This repository was just a preservation effort of code that I found as an archive.  
+> In the meantime a promising fork of `intel-vaapi-driver` appeared.  
+> You might want to check [Highly experimental H264 support for G45/CTG](https://github.com/irql-notlessorequal/intel-vaapi-driver/pull/11) instead.  
+
 # `intel-vaapi-driver` with h264 G45 support
 
 ## The issue
